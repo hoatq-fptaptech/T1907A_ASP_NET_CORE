@@ -1,11 +1,14 @@
 ﻿import React from 'react'
 import ProductForm from './ProductForm'
+import ProductUpdate from './ProductUpdate';
 export default class Products extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
             products: [],
-            showForm: false
+            showForm: false,
+            editing: false,
+            product:null
         }
         this.reload = this.reload.bind(this);
     }
@@ -24,7 +27,10 @@ export default class Products extends React.Component {
     render() {
         const products = this.state.products;
         const showForm = this.state.showForm;
+        const editing = this.state.editing;
+        const product = this.state.product;
         return (
+            editing && product !== null ? <ProductUpdate onReload={this.reload} product={product} onBack={() => { this.setState({ editing: false }); }} /> : (
             showForm ? <ProductForm onReload={this.reload}  onBack={() => { this.setState({ showForm: false }); }}/>:
             <div>
                 <h1>Product Listing</h1>
@@ -47,13 +53,13 @@ export default class Products extends React.Component {
                                         <td>{e.name}</td>
                                         <td>{e.image}</td>
                                         <td>{e.price}</td>
-                                        <td></td>
+                                        <td><button onClick={() => { this.setState({ editing:true,product:e }) }} className="btn btn-primary" type="button">Edit</button></td>
                                     </tr>
                             })
                         }
                     </tbody>
                 </table>
-            </div>
+            </div>)
             )     
     }
 }
