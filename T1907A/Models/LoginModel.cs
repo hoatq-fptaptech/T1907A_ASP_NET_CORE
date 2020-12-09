@@ -22,4 +22,10 @@ namespace T1907A.Models
         public string Message { get; set; }
     }
 
+    public class ChangePwd
+    {
+        public string Current { get; set; }
+        public string NewPwd { get; set; }
+        public string ConfirmPwd { get; set; }
+    }
 }

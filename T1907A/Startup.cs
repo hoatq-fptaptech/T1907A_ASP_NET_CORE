@@ -6,11 +6,13 @@ using Microsoft.AspNetCore.SpaServices.ReactDevelopmentServer;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using T1907A.Middleware;
 
 namespace T1907A
 {
     public class Startup
     {
+        private readonly string AllowAll = "_AllowAll";
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
@@ -23,7 +25,15 @@ namespace T1907A
         {
             services.AddMvc();
             services.AddControllersWithViews();
-
+            services.AddCors(options => {
+                options.AddPolicy(
+                        name:AllowAll,
+                        builder =>
+                        {
+                            builder.WithOrigins("*");
+                        }
+                    );
+            });
             // In production, the React files will be served from this directory
             services.AddSpaStaticFiles(configuration =>
             {
@@ -44,13 +54,15 @@ namespace T1907A
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
-   
-            app.Use(async (context, next) =>
-            {
-                // Do work that doesn't write to the Response.
-                await next.Invoke();
-                // Do logging or other work that doesn't write to the Response.
-            });
+            app.UseCors(AllowAll);
+            /* app.Use(async (context, next) =>
+             {
+                 // Do work that doesn't write to the Response.
+                 await next.Invoke();
+                 // Do logging or other work that doesn't write to the Response.
+             });*/
+            app.UseMiddleware<ApiGetToken>();
+            
             app.UseHttpsRedirection();
             app.UseStaticFiles();
             app.UseSpaStaticFiles();
